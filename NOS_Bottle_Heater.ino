@@ -20,8 +20,8 @@ int Heater_Pin = 12;
 int TempOK_Pin = 10;
 int BottleTemp = 97;
 
-
-
+int tempsim = 80;
+#define simulation
 
 void setup(void)
 {
@@ -79,7 +79,7 @@ void setup(void)
   Serial.println();
 
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-  sensors.setResolution(insideThermometer, 9);
+  sensors.setResolution(insideThermometer, 12);
  
   Serial.print("Device 0 Resolution: ");
   Serial.print(sensors.getResolution(insideThermometer), DEC); 
@@ -100,8 +100,15 @@ void printTemperature(DeviceAddress deviceAddress)
   Serial.print("Temp C: ");
   Serial.print(tempC);
   Serial.print(" Temp F: ");
-  tempF=DallasTemperature::toFahrenheit(tempC);
-  Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
+ tempF=DallasTemperature::toFahrenheit(tempC);
+ 
+ #ifdef simulation
+ if (digitalRead(Heater_Pin)== HIGH ){tempsim++; }
+  else
+  {tempsim--;}
+   tempF=tempsim;  
+ #endif  
+   Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
 }
 
 void loop(void)
@@ -111,7 +118,7 @@ void loop(void)
   Serial.print("Requesting temperatures...");
   sensors.requestTemperatures(); // Send the command to get temperatures
   Serial.println("DONE");
-  
+
   // It responds almost immediately. Let's print out the data
   printTemperature(insideThermometer); // Use a simple function to print out the data
   
@@ -135,11 +142,23 @@ if (tempF < BottleTemp ){
  digitalWrite(LED_Pin, LOW); 
  digitalWrite(Heater_Pin, LOW);  
  }
+ 
 if (tempF > (BottleTemp - 3)){digitalWrite(TempOK_Pin, HIGH);}
 else
 {
  digitalWrite(TempOK_Pin, LOW);
  }
+ 
+ Serial.print("Ziel Temperatur: ");
+ Serial.println(BottleTemp);
+  Serial.print("Aktulle Temperatur: ");
+ Serial.println(tempF);
+ Serial.print("Heizung: ");
+ Serial.println(digitalRead(Heater_Pin));
+ Serial.print("Temperatur OK: ");
+ Serial.println(digitalRead(TempOK_Pin));
+ //delay (60000);
+ delay (1000);
 }
 
 // function to print a device address
@@ -150,6 +169,6 @@ void printAddress(DeviceAddress deviceAddress)
     if (deviceAddress[i] < 16) Serial.print("0");
     Serial.print(deviceAddress[i], HEX);
   }
-delay (60000);  
+  
   
 }
