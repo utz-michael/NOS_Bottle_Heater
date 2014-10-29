@@ -18,7 +18,11 @@ int tempF ;  //Temperature in °F
 int LED_Pin = 11;
 int Heater_Pin = 12;
 int TempOK_Pin = 10;
+int BottleTempMin = 91;
+int BottleTempMax = 104;
 int BottleTemp = 97;
+const int analogInPin = A0;
+int sensorValue = 0;
 
 int tempsim = 80;
 #define simulation
@@ -132,7 +136,14 @@ Bottle Temp°F  Bottle Pressure (psi)
 85                    950
 97                    1069
 
-*/  
+*/ 
+
+// read the analog in value:
+  sensorValue = analogRead(analogInPin);            
+  // map it to the range of the analog out:
+  BottleTemp = map(sensorValue, 0, 1023,BottleTempMin ,BottleTempMax);  
+
+
 if (tempF < BottleTemp ){ 
   digitalWrite(LED_Pin, HIGH); 
   digitalWrite(Heater_Pin, HIGH); 
