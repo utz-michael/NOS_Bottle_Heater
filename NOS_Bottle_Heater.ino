@@ -17,6 +17,7 @@ int tempF ;  //Temperature in °F
 
 int LED_Pin = 7;
 int Heater_Pin = 4;
+int Pump_Pin = 5;
 int TempOK_Pin = 6;
 int BottleTempMin = 91;
 int BottleTempMax = 104;
@@ -25,7 +26,7 @@ const int analogInPin = A0;
 int sensorValue = 0;
 
 int tempsim = 80;
-#define simulation
+//#define simulation
 
 void setup(void)
 {
@@ -35,6 +36,7 @@ void setup(void)
   pinMode(LED_Pin, OUTPUT);
   pinMode(Heater_Pin, OUTPUT);  
   pinMode(TempOK_Pin, OUTPUT);
+  pinMode(Pump_Pin, OUTPUT);
   
   
   
@@ -147,11 +149,13 @@ Bottle Temp°F  Bottle Pressure (psi)
 if (tempF < BottleTemp ){ 
   digitalWrite(LED_Pin, HIGH); 
   digitalWrite(Heater_Pin, HIGH); 
+  digitalWrite(Pump_Pin, HIGH); 
   }
   else
  { 
  digitalWrite(LED_Pin, LOW); 
  digitalWrite(Heater_Pin, LOW);  
+ digitalWrite(Pump_Pin, LOW); 
  }
  
 if (tempF > (BottleTemp - 3)){digitalWrite(TempOK_Pin, HIGH);}
@@ -168,8 +172,8 @@ else
  Serial.println(digitalRead(Heater_Pin));
  Serial.print("Temperatur OK: ");
  Serial.println(digitalRead(TempOK_Pin));
- //delay (60000);
- delay (1000);
+ delay (60000);
+ //delay (1000);
 }
 
 // function to print a device address
