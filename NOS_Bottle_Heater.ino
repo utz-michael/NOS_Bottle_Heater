@@ -2,7 +2,7 @@
 #include <DallasTemperature.h>
 
 // Data wire is plugged into port 2 on the Arduino
-#define ONE_WIRE_BUS 2
+#define ONE_WIRE_BUS 8
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
@@ -15,9 +15,9 @@ DeviceAddress insideThermometer;
 
 int tempF ;  //Temperature in °F
 
-int LED_Pin = 11;
-int Heater_Pin = 12;
-int TempOK_Pin = 10;
+int LED_Pin = 7;
+int Heater_Pin = 4;
+int TempOK_Pin = 6;
 int BottleTempMin = 91;
 int BottleTempMax = 104;
 int BottleTemp = 97;
