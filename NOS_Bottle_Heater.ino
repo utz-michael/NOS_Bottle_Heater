@@ -15,8 +15,8 @@ DeviceAddress insideThermometer;
 
 int tempF ;  //Temperature in °F
 
-int LED_Pin = 7;
-int Heater_Pin = 4;
+int LED_Pin = 7;  //Heizungs LED
+int Heater_Pin = 4; 
 int Pump_Pin = 5;
 int TempOK_Pin = 6;
 int BottleTempMin = 91;
@@ -24,6 +24,8 @@ int BottleTempMax = 104;
 int BottleTemp = 97;
 const int analogInPin = A0;
 int sensorValue = 0;
+int HeaterIntervall = 3;
+int HeaterCounter = 0;
 
 int tempsim = 80;
 //#define simulation
@@ -85,7 +87,7 @@ void setup(void)
   Serial.println();
 
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-  sensors.setResolution(insideThermometer, 12);
+  sensors.setResolution(insideThermometer, 9);
  
   Serial.print("Device 0 Resolution: ");
   Serial.print(sensors.getResolution(insideThermometer), DEC); 
@@ -149,7 +151,13 @@ Bottle Temp°F  Bottle Pressure (psi)
 if (tempF < BottleTemp ){ 
   digitalWrite(LED_Pin, HIGH); 
   digitalWrite(Heater_Pin, HIGH); 
-  digitalWrite(Pump_Pin, HIGH); 
+  if ( HeaterCounter == HeaterIntervall) {
+    digitalWrite(Pump_Pin, HIGH);
+    Serial.println("Pumpe an");
+    delay (10000);
+    digitalWrite(Pump_Pin, LOW);
+    HeaterCounter = 0;
+    }
   }
   else
  { 
@@ -173,6 +181,7 @@ else
  Serial.print("Temperatur OK: ");
  Serial.println(digitalRead(TempOK_Pin));
  delay (60000);
+ HeaterCounter ++;
  //delay (1000);
 }
 
