@@ -19,7 +19,7 @@ int LED_Pin = 7;  //Heizungs LED
 int Heater_Pin = 4; 
 int Pump_Pin = 5;
 int TempOK_Pin = 6;
-int BottleTempMin = 91;
+int BottleTempMin = 86;
 int BottleTempMax = 104;
 int BottleTemp = 97;
 const int analogInPin = A0;
@@ -180,7 +180,7 @@ else
  Serial.println(digitalRead(Heater_Pin));
  Serial.print("Temperatur OK: ");
  Serial.println(digitalRead(TempOK_Pin));
- delay (60000);
+ delay (10000);
  HeaterCounter ++;
  //delay (1000);
 }
