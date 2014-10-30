@@ -151,7 +151,7 @@ Bottle Temp°F  Bottle Pressure (psi)
 if (tempF < BottleTemp ){ 
   digitalWrite(LED_Pin, HIGH); 
   digitalWrite(Heater_Pin, HIGH); 
-  if ( HeaterCounter == HeaterIntervall) {
+  if ( HeaterCounter >= HeaterIntervall) {
     digitalWrite(Pump_Pin, HIGH);
     Serial.println("Pumpe an");
     delay (10000);
