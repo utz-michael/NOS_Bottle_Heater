@@ -1,0 +1,5 @@
+Release V1.0
+
+- Heizung mit Umwelzpumpe
+- Temperatur einstellbar zwischen 33°C und 40°C 
+- Pumpe beim Heizen 10s an 3 Min aus
