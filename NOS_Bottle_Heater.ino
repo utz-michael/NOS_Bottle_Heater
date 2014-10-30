@@ -24,7 +24,7 @@ int BottleTempMax = 104;
 int BottleTemp = 97;
 const int analogInPin = A0;
 int sensorValue = 0;
-int HeaterIntervall = 3;
+int HeaterIntervall = 18;
 int HeaterCounter = 0;
 
 int tempsim = 80;
