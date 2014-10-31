@@ -22,11 +22,11 @@ int TempOK_Pin = 6;
 int BottleTempMin = 86;
 int BottleTempMax = 104;
 int BottleTemp = 97;
-int hysterese = 3; // in °F
+int hysterese = 2; // in °F
 const int analogInPin = A0;
 int sensorValue = 0;
 
-int HeaterIntervall = 360;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
+int HeaterIntervall = 100;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
 int HeaterDauer = 20;  // 20 entspricht 10s auslesezeit Temperatur sensor ca 500 ms
 int HeaterCounter = 0;
 int coldstart = 0; // 
@@ -175,16 +175,24 @@ if (tempF < (BottleTemp-hysterese) && coldstart == 1){
 
 // Pumpensteuerung ----------------------  
  
-  if ( HeaterCounter >= HeaterIntervall && digitalRead(Heater_Pin)== HIGH ) {
+  if ( HeaterCounter >= HeaterIntervall && digitalRead(Heater_Pin)== HIGH && tempF < 82) {
     digitalWrite(Pump_Pin, HIGH);
     HeaterCounter = 0;
     }
     
-   if ( HeaterCounter >= HeaterDauer && digitalRead(Pump_Pin)== HIGH ) { 
+   if ( HeaterCounter >= HeaterDauer && digitalRead(Pump_Pin)== HIGH && tempF < 82 ) { 
     digitalWrite(Pump_Pin, LOW);
     HeaterCounter = 0;
     }
+    if (  digitalRead(Heater_Pin)== HIGH && tempF >= 82) {
+    digitalWrite(Pump_Pin, HIGH);
+    
+    }
+    
+   if ( digitalRead(Heater_Pin)== LOW && tempF >= 82 ) { 
+    digitalWrite(Pump_Pin, LOW);
    
+    }
  
  
  
