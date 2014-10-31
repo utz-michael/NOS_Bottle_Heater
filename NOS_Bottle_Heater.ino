@@ -22,10 +22,15 @@ int TempOK_Pin = 6;
 int BottleTempMin = 86;
 int BottleTempMax = 104;
 int BottleTemp = 97;
+int hysterese = 3; // in °F
 const int analogInPin = A0;
 int sensorValue = 0;
-int HeaterIntervall = 18;
+
+int HeaterIntervall = 360;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
+int HeaterDauer = 20;  // 20 entspricht 10s auslesezeit Temperatur sensor ca 500 ms
 int HeaterCounter = 0;
+int coldstart = 0; // 
+
 
 int tempsim = 80;
 //#define simulation
@@ -87,7 +92,7 @@ void setup(void)
   Serial.println();
 
   // set the resolution to 9 bit (Each Dallas/Maxim device is capable of several different resolutions)
-  sensors.setResolution(insideThermometer, 9);
+  sensors.setResolution(insideThermometer, 12);
  
   Serial.print("Device 0 Resolution: ");
   Serial.print(sensors.getResolution(insideThermometer), DEC); 
@@ -114,7 +119,8 @@ void printTemperature(DeviceAddress deviceAddress)
  if (digitalRead(Heater_Pin)== HIGH ){tempsim++; }
   else
   {tempsim--;}
-   tempF=tempsim;  
+   tempF=tempsim;
+ delay (500); 
  #endif  
    Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
 }
@@ -147,42 +153,66 @@ Bottle Temp°F  Bottle Pressure (psi)
   // map it to the range of the analog out:
   BottleTemp = map(sensorValue, 0, 1023,BottleTempMin ,BottleTempMax);  
 
-
-if (tempF < BottleTemp ){ 
+// hochheizen bis tem das erste mal erreicht----------------------
+if (tempF < (BottleTemp) && coldstart == 0 ){ 
   digitalWrite(LED_Pin, HIGH); 
   digitalWrite(Heater_Pin, HIGH); 
-  if ( HeaterCounter >= HeaterIntervall) {
-    digitalWrite(Pump_Pin, HIGH);
-    Serial.println("Pumpe an");
-    delay (10000);
-    digitalWrite(Pump_Pin, LOW);
-    HeaterCounter = 0;
-    }
   }
   else
  { 
+ coldstart = 1;  
  digitalWrite(LED_Pin, LOW); 
- digitalWrite(Heater_Pin, LOW);  
- digitalWrite(Pump_Pin, LOW); 
+ digitalWrite(Heater_Pin, LOW); 
  }
+// ---------------------- 
  
-if (tempF > (BottleTemp - 3)){digitalWrite(TempOK_Pin, HIGH);}
+
+
+// erhaltungsheizung----------------------
+if (tempF < (BottleTemp-hysterese) && coldstart == 1){ 
+  coldstart = 0;
+  }
+
+// Pumpensteuerung ----------------------  
+ 
+  if ( HeaterCounter >= HeaterIntervall && digitalRead(Heater_Pin)== HIGH ) {
+    digitalWrite(Pump_Pin, HIGH);
+    HeaterCounter = 0;
+    }
+    
+   if ( HeaterCounter >= HeaterDauer && digitalRead(Pump_Pin)== HIGH ) { 
+    digitalWrite(Pump_Pin, LOW);
+    HeaterCounter = 0;
+    }
+   
+ 
+ 
+ 
+if (tempF >= (BottleTemp - hysterese) && tempF <= (BottleTemp + hysterese )){digitalWrite(TempOK_Pin, HIGH);}
 else
 {
  digitalWrite(TempOK_Pin, LOW);
  }
  
+ 
+ 
+ Serial.print("Kaltstart: ");
+ Serial.println(coldstart);
  Serial.print("Ziel Temperatur: ");
  Serial.println(BottleTemp);
-  Serial.print("Aktulle Temperatur: ");
+ Serial.print("Aktulle Temperatur: ");
  Serial.println(tempF);
  Serial.print("Heizung: ");
  Serial.println(digitalRead(Heater_Pin));
  Serial.print("Temperatur OK: ");
  Serial.println(digitalRead(TempOK_Pin));
- delay (10000);
+ Serial.print("Pumpe: ");
+ Serial.println(digitalRead(Pump_Pin));
+ Serial.print("Counter: ");
+ Serial.println(HeaterCounter);
+ 
  HeaterCounter ++;
- //delay (1000);
+ 
 }
 
 // function to print a device address

@@ -1,3 +1,8 @@
+Release V2.0
+- Alles dynamicher gemacht durch entfernen von delay
+- messung jede sekunde
+- hysterese 3°F
+
 Release V1.0
 
 - Heizung mit Umwelzpumpe
