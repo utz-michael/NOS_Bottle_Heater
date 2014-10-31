@@ -34,7 +34,8 @@ int coldstart = 0; //
 
 int tempsim = 80;
 //#define simulation
-
+//#define logging
+//#define debug
 void setup(void)
 {
   // start serial port
@@ -110,9 +111,11 @@ void printTemperature(DeviceAddress deviceAddress)
 
   // method 2 - faster
   float tempC = sensors.getTempC(deviceAddress);
+  #ifdef debug 
   Serial.print("Temp C: ");
   Serial.print(tempC);
   Serial.print(" Temp F: ");
+  #endif
  tempF=DallasTemperature::toFahrenheit(tempC);
  
  #ifdef simulation
@@ -122,17 +125,22 @@ void printTemperature(DeviceAddress deviceAddress)
    tempF=tempsim;
  delay (500); 
  #endif  
+ #ifdef debug 
    Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
+ #endif  
 }
 
 void loop(void)
 { 
   // call sensors.requestTemperatures() to issue a global temperature 
   // request to all devices on the bus
+#ifdef debug 
   Serial.print("Requesting temperatures...");
+  #endif
   sensors.requestTemperatures(); // Send the command to get temperatures
+#ifdef debug 
   Serial.println("DONE");
-
+#endif
   // It responds almost immediately. Let's print out the data
   printTemperature(insideThermometer); // Use a simple function to print out the data
   
@@ -202,8 +210,22 @@ else
  digitalWrite(TempOK_Pin, LOW);
  }
  
- 
- 
+ #ifdef logging
+Serial.print(millis()); 
+Serial.print(";"); 
+Serial.print(BottleTemp);
+Serial.print(";");
+Serial.print(tempF);
+Serial.print(";");
+Serial.print(digitalRead(Heater_Pin));
+Serial.print(";");
+Serial.print(digitalRead(TempOK_Pin));
+Serial.print(";");
+Serial.println(digitalRead(Pump_Pin));
+#endif 
+
+
+#ifdef debug
  Serial.print("Kaltstart: ");
  Serial.println(coldstart);
  Serial.print("Ziel Temperatur: ");
@@ -218,7 +240,7 @@ else
  Serial.println(digitalRead(Pump_Pin));
  Serial.print("Counter: ");
  Serial.println(HeaterCounter);
- 
+ #endif
  HeaterCounter ++;
  
 }
