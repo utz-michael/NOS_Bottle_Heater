@@ -26,16 +26,16 @@ int hysterese = 2; // in °F
 const int analogInPin = A0;
 int sensorValue = 0;
 
-int HeaterIntervall = 100;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
-int HeaterDauer = 20;  // 20 entspricht 10s auslesezeit Temperatur sensor ca 500 ms
-int HeaterCounter = 0;
+//int HeaterIntervall = 100;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
+//int HeaterDauer = 20;  // 20 entspricht 10s auslesezeit Temperatur sensor ca 500 ms
+//int HeaterCounter = 0;
 int coldstart = 0; // 
 
 
 int tempsim = 80;
 //#define simulation
 //#define logging
-//#define debug
+#define debug
 void setup(void)
 {
   // start serial port
@@ -164,13 +164,15 @@ Bottle Temp°F  Bottle Pressure (psi)
 // hochheizen bis tem das erste mal erreicht----------------------
 if (tempF < (BottleTemp) && coldstart == 0 ){ 
   digitalWrite(LED_Pin, HIGH); 
-  digitalWrite(Heater_Pin, HIGH); 
+  digitalWrite(Heater_Pin, HIGH);
+ digitalWrite(Pump_Pin, HIGH); 
   }
   else
  { 
  coldstart = 1;  
  digitalWrite(LED_Pin, LOW); 
  digitalWrite(Heater_Pin, LOW); 
+ digitalWrite(Pump_Pin, LOW);
  }
 // ---------------------- 
  
@@ -180,7 +182,7 @@ if (tempF < (BottleTemp) && coldstart == 0 ){
 if (tempF < (BottleTemp-hysterese) && coldstart == 1){ 
   coldstart = 0;
   }
-
+/*
 // Pumpensteuerung ----------------------  
  
   if ( HeaterCounter >= HeaterIntervall && digitalRead(Heater_Pin)== HIGH && tempF < 82) {
@@ -194,14 +196,14 @@ if (tempF < (BottleTemp-hysterese) && coldstart == 1){
     }
     if (  digitalRead(Heater_Pin)== HIGH && tempF >= 82) {
     digitalWrite(Pump_Pin, HIGH);
-    
+    HeaterCounter = 0;
     }
     
    if ( digitalRead(Heater_Pin)== LOW && tempF >= 82 ) { 
     digitalWrite(Pump_Pin, LOW);
-   
+   HeaterCounter = 0;
     }
- 
+ */
  
  
 if (tempF >= (BottleTemp - hysterese) && tempF <= (BottleTemp + hysterese )){digitalWrite(TempOK_Pin, HIGH);}
@@ -238,10 +240,10 @@ Serial.println(digitalRead(Pump_Pin));
  Serial.println(digitalRead(TempOK_Pin));
  Serial.print("Pumpe: ");
  Serial.println(digitalRead(Pump_Pin));
- Serial.print("Counter: ");
- Serial.println(HeaterCounter);
+ //Serial.print("Counter: ");
+// Serial.println(HeaterCounter);
  #endif
- HeaterCounter ++;
+// HeaterCounter ++;
  
 }
 
