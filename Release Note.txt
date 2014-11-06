@@ -1,3 +1,8 @@
+Release V2.1
+- hysterese 2°F
+- Pumpe wird mit Heizung geschaltet
+- Logging ausgabe für excel
+
 Release V2.0
 - Alles dynamicher gemacht durch entfernen von delay
 - messung jede sekunde

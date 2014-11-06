@@ -26,16 +26,13 @@ int hysterese = 2; // in °F
 const int analogInPin = A0;
 int sensorValue = 0;
 
-//int HeaterIntervall = 100;  // 360 entspricht 3 min auslesezeit Temperatur sensor ca 500 ms 
-//int HeaterDauer = 20;  // 20 entspricht 10s auslesezeit Temperatur sensor ca 500 ms
-//int HeaterCounter = 0;
 int coldstart = 0; // 
 
 
 int tempsim = 80;
 //#define simulation
-//#define logging
-#define debug
+//#define logging //Logging or debug
+#define debug //Logging or debug
 void setup(void)
 {
   // start serial port
@@ -61,33 +58,9 @@ void setup(void)
   Serial.print("Parasite power is: "); 
   if (sensors.isParasitePowerMode()) Serial.println("ON");
   else Serial.println("OFF");
-  
-  // assign address manually.  the addresses below will beed to be changed
-  // to valid device addresses on your bus.  device address can be retrieved
-  // by using either oneWire.search(deviceAddress) or individually via
-  // sensors.getAddress(deviceAddress, index)
-  //insideThermometer = { 0x28, 0x1D, 0x39, 0x31, 0x2, 0x0, 0x0, 0xF0 };
-
-  // Method 1:
-  // search for devices on the bus and assign based on an index.  ideally,
-  // you would do this to initially discover addresses on the bus and then 
-  // use those addresses and manually assign them (see above) once you know 
-  // the devices on your bus (and assuming they don't change).
+ 
   if (!sensors.getAddress(insideThermometer, 0)) Serial.println("Unable to find address for Device 0"); 
-  
-  // method 2: search()
-  // search() looks for the next device. Returns 1 if a new address has been
-  // returned. A zero might mean that the bus is shorted, there are no devices, 
-  // or you have already retrieved all of them.  It might be a good idea to 
-  // check the CRC to make sure you didn't get garbage.  The order is 
-  // deterministic. You will always get the same devices in the same order
-  //
-  // Must be called before search()
-  //oneWire.reset_search();
-  // assigns the first address found to insideThermometer
-  //if (!oneWire.search(insideThermometer)) Serial.println("Unable to find address for insideThermometer");
 
-  // show the addresses we found on the bus
   Serial.print("Device 0 Address: ");
   printAddress(insideThermometer);
   Serial.println();
@@ -103,13 +76,7 @@ void setup(void)
 // function to print the temperature for a device
 void printTemperature(DeviceAddress deviceAddress)
 {
-  // method 1 - slower
-  //Serial.print("Temp C: ");
-  //Serial.print(sensors.getTempC(deviceAddress));
-  //Serial.print(" Temp F: ");
-  //Serial.print(sensors.getTempF(deviceAddress)); // Makes a second call to getTempC and then converts to Fahrenheit
-
-  // method 2 - faster
+ 
   float tempC = sensors.getTempC(deviceAddress);
   #ifdef debug 
   Serial.print("Temp C: ");
@@ -152,7 +119,13 @@ Bottle Temp°F  Bottle Pressure (psi)
 70                    760
 80                    865
 85                    950
-97                    1069
+86                    975
+87                    1000
+88                    1025
+89                    1050
+90                    1075
+
+97                    1069??
 
 */ 
 
@@ -182,30 +155,7 @@ if (tempF < (BottleTemp) && coldstart == 0 ){
 if (tempF < (BottleTemp-hysterese) && coldstart == 1){ 
   coldstart = 0;
   }
-/*
-// Pumpensteuerung ----------------------  
- 
-  if ( HeaterCounter >= HeaterIntervall && digitalRead(Heater_Pin)== HIGH && tempF < 82) {
-    digitalWrite(Pump_Pin, HIGH);
-    HeaterCounter = 0;
-    }
-    
-   if ( HeaterCounter >= HeaterDauer && digitalRead(Pump_Pin)== HIGH && tempF < 82 ) { 
-    digitalWrite(Pump_Pin, LOW);
-    HeaterCounter = 0;
-    }
-    if (  digitalRead(Heater_Pin)== HIGH && tempF >= 82) {
-    digitalWrite(Pump_Pin, HIGH);
-    HeaterCounter = 0;
-    }
-    
-   if ( digitalRead(Heater_Pin)== LOW && tempF >= 82 ) { 
-    digitalWrite(Pump_Pin, LOW);
-   HeaterCounter = 0;
-    }
- */
- 
- 
+// steuerung der grünen LED zur anzeige ob Wassertemperatur im soll bereich ist
 if (tempF >= (BottleTemp - hysterese) && tempF <= (BottleTemp + hysterese )){digitalWrite(TempOK_Pin, HIGH);}
 else
 {
@@ -240,10 +190,9 @@ Serial.println(digitalRead(Pump_Pin));
  Serial.println(digitalRead(TempOK_Pin));
  Serial.print("Pumpe: ");
  Serial.println(digitalRead(Pump_Pin));
- //Serial.print("Counter: ");
-// Serial.println(HeaterCounter);
+
  #endif
-// HeaterCounter ++;
+
  
 }
 
